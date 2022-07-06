@@ -1,13 +1,16 @@
 package com.example.search_for_mentions.ClientGoogle.model;
 
+import lombok.Data;
+
 import java.util.List;
 import javax.annotation.Generated;
 
 @Generated("jsonschema2pojo")
+@Data
 public class Example {
 
-    public String status;
-    public Integer totalResults;
-    public List<Article> articles = null;
+     String status;
+     Integer totalResults;
+     List<Article> articles = null;
 
 }
