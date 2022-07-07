@@ -8,7 +8,7 @@ import javax.annotation.Generated;
 @Data
 public class Source {
 
-     Integer id;
+     String id;
      String name;
 
 }

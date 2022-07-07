@@ -10,7 +10,7 @@ import javax.annotation.Generated;
 public class Example {
 
      String status;
-     Integer totalResults;
+     String totalResults;
      List<Article> articles = null;
 
 }
