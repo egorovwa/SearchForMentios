@@ -21,13 +21,13 @@ class SearchForMentionsApplicationTests {
     @Test
     void test1_findFromNowBarnaul() {
         HomePageParam pageParam = createTestParam();
-        List<News> newsList =findNewsService.getNewsList(pageParam);
-        assertTrue(newsList.size()>0);
+       // List<News> newsList =findNewsService.findNews(pageParam);
+       // assertTrue(newsList.size()>0);
     }
 
     private HomePageParam createTestParam() {
         HomePageParam pageParam = new HomePageParam();
-        pageParam.setQ("Путин");
+
         pageParam.setFrom(LocalDate.now());
         pageParam.setApiKey(GoogleNewsRequestsString.apiKey);
         return pageParam;

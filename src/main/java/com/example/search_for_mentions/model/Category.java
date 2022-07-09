@@ -15,7 +15,6 @@ import javax.persistence.Id;
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    int id;
-    @ColumnDefault(value = "UNDEFINDED")
-    String name;
+    private int id;
+    private String name;
 }

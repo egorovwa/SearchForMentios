@@ -14,7 +14,6 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/search")
 public class GoogleNewsController {
     private final FindNewsService findNewsService;
     @ModelAttribute(name = "homepage")
@@ -22,17 +21,25 @@ public class GoogleNewsController {
         return new HomePageParam();
     }
 
-    @GetMapping
+    @GetMapping("/test/search")
     public List<String> searchWithGoogle(@RequestBody HomePageParam homePageParam) {
-       return findNewsService.getNewsList(homePageParam);
+       return findNewsService.findNews(homePageParam);
     }
-    @GetMapping("/develop")
+    @GetMapping("/test")
     public HomePageParam sendJsonHPP(){
         HomePageParam homePageParam = new HomePageParam();
         homePageParam.setApiKey(GoogleNewsRequestsString.apiKey);
-        homePageParam.setQ("Путин");
+        homePageParam.setQ(List.of("Путин","Putin"));
         homePageParam.setFrom(LocalDate.now());
         return homePageParam;
+    }
+    @GetMapping("/news")
+    public List<News> findNews(){
+       return findNewsService.getAllNews();
+    }
+    @PutMapping("/news")
+    public News updateNews(@RequestBody News news){
+        return findNewsService.update(news);
     }
 }
 

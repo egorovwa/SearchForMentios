@@ -6,7 +6,11 @@ import com.example.search_for_mentions.controllers.paramsFiles.HomePageParam;
 import java.util.List;
 
 public interface FindNewsService {
-    List<String> getNewsList(HomePageParam homePageParam);
+    List<String> findNews(HomePageParam homePageParam);
 
-   // TODO: 07.07.2022 must return List or set
+    List<News> getAllNews();
+
+    News update(News news);
+
+    // TODO: 07.07.2022 must return List or set
 }

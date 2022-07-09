@@ -13,15 +13,18 @@ import com.example.search_for_mentions.storage.NewsDao;
 import com.example.search_for_mentions.storage.SourceDao;
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class FindNewsServiceImpl implements FindNewsService {
     final private FeingGoogleNews feingGoogleNews;
@@ -30,15 +33,10 @@ public class FindNewsServiceImpl implements FindNewsService {
     private final SourceDao sourceDao;
 
 
-    @Override
-    public List<String> getNewsList(HomePageParam homePageParam) {
-        String q = homePageParam.getQ();
-        LocalDate from = homePageParam.getFrom();
-        String sortBy = homePageParam.getSortBy();
-        String apiKey = GoogleNewsRequestsString.apiKey; // TODO: 07.07.2022 needclient Selenium
+    private List<String> getNewsList(String q, LocalDate from, String sortBy, String apiKey) {
         String toClientFrom = dateFormat.format(from);
         Example example = feingGoogleNews.getArticle(q, toClientFrom, sortBy, apiKey);
-
+        log.info("Полученно {} упоминаний", example.getArticles().size());
         List<String> newsList = new ArrayList<>();
         example.getArticles().forEach(r -> {
             if (newsDao.findByUrl(r.getUrl()).isEmpty()) {
@@ -48,7 +46,7 @@ public class FindNewsServiceImpl implements FindNewsService {
                 NewsSource newsSource = checkOrSaveSourse(source.getName())
                         .orElse(sourceDao.save(new NewsSource(source.getName(), source.getId())));
                 newsSource.getNewsList().add(news);
-                news.setNewsSource(newsSource);
+                news.setNewsSource(newsSource.getName());
                 newsList.add(news.getTitle());
                 newsDao.save(news);
             }
@@ -62,4 +60,27 @@ public class FindNewsServiceImpl implements FindNewsService {
         return sourceDao.findByName(sourceName);
     }
 
+    @Override
+    public List<String> findNews(HomePageParam homePageParam) {
+        List<String> q = homePageParam.getQ();
+        LocalDate from = homePageParam.getFrom();
+        String sortBy = homePageParam.getSortBy();
+        String apiKey = GoogleNewsRequestsString.apiKey; // TODO: 07.07.2022 needclient Selenium
+        q.forEach(r -> getNewsList(r, from, sortBy, apiKey));
+        return null;
+    }
+
+    @Override
+    public List<News> getAllNews() {
+        return newsDao.findAll();
+    }
+
+    @Override
+    public News update(News news) {
+        if (newsDao.findByUrl(news.getUrl()).isPresent()) {
+            return newsDao.save(news);
+        } else {
+            throw new NoSuchElementException(news.getUrl());
+        }
+    }
 }
