@@ -15,7 +15,7 @@ import javax.persistence.*;
 public class News {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    int id;
+    Integer id;
     private String newsSource;
     private String author;
     @Column(length = 1000)
@@ -32,6 +32,8 @@ public class News {
     PositiveStatus positiveStatus = PositiveStatus.UNDEFINDED;
     @ManyToOne
     private Category category;
+    @ManyToOne
+    private RequestWord word;
 
 
     public News(String author, String title, String description, String url, String urlToImage, String publishedAt, String content) {

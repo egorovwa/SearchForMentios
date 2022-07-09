@@ -8,6 +8,8 @@ import com.example.search_for_mentions.ClientGoogle.model.Source;
 import com.example.search_for_mentions.model.News;
 import com.example.search_for_mentions.model.NewsSource;
 import com.example.search_for_mentions.controllers.paramsFiles.HomePageParam;
+import com.example.search_for_mentions.model.Question;
+import com.example.search_for_mentions.model.RequestWord;
 import com.example.search_for_mentions.services.FindNewsService;
 import com.example.search_for_mentions.storage.NewsDao;
 import com.example.search_for_mentions.storage.SourceDao;
@@ -33,9 +35,9 @@ public class FindNewsServiceImpl implements FindNewsService {
     private final SourceDao sourceDao;
 
 
-    private List<String> getNewsList(String q, LocalDate from, String sortBy, String apiKey) {
+    private List<String> getNewsList(RequestWord q, LocalDate from, String sortBy, String apiKey) {
         String toClientFrom = dateFormat.format(from);
-        Example example = feingGoogleNews.getArticle(q, toClientFrom, sortBy, apiKey);
+        Example example = feingGoogleNews.getArticle(q.getWord(), toClientFrom, sortBy, apiKey);
         log.info("Полученно {} упоминаний", example.getArticles().size());
         List<String> newsList = new ArrayList<>();
         example.getArticles().forEach(r -> {
@@ -47,6 +49,7 @@ public class FindNewsServiceImpl implements FindNewsService {
                         .orElse(sourceDao.save(new NewsSource(source.getName(), source.getId())));
                 newsSource.getNewsList().add(news);
                 news.setNewsSource(newsSource.getName());
+                news.setWord(q);
                 newsList.add(news.getTitle());
                 newsDao.save(news);
             }
@@ -62,11 +65,11 @@ public class FindNewsServiceImpl implements FindNewsService {
 
     @Override
     public List<String> findNews(HomePageParam homePageParam) {
-        List<String> q = homePageParam.getQ();
+        Question q = homePageParam.getQ();
         LocalDate from = homePageParam.getFrom();
         String sortBy = homePageParam.getSortBy();
         String apiKey = GoogleNewsRequestsString.apiKey; // TODO: 07.07.2022 needclient Selenium
-        q.forEach(r -> getNewsList(r, from, sortBy, apiKey));
+        q.getWords().forEach(r -> getNewsList(r, from, sortBy, apiKey));
         return null;
     }
 

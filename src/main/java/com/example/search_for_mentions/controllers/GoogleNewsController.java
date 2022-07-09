@@ -3,6 +3,8 @@ package com.example.search_for_mentions.controllers;
 import com.example.search_for_mentions.ClientGoogle.GoogleNewsRequestsString;
 import com.example.search_for_mentions.model.News;
 import com.example.search_for_mentions.controllers.paramsFiles.HomePageParam;
+import com.example.search_for_mentions.model.Question;
+import com.example.search_for_mentions.model.RequestWord;
 import com.example.search_for_mentions.services.FindNewsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,18 +23,8 @@ public class GoogleNewsController {
         return new HomePageParam();
     }
 
-    @GetMapping("/test/search")
-    public List<String> searchWithGoogle(@RequestBody HomePageParam homePageParam) {
-       return findNewsService.findNews(homePageParam);
-    }
-    @GetMapping("/test")
-    public HomePageParam sendJsonHPP(){
-        HomePageParam homePageParam = new HomePageParam();
-        homePageParam.setApiKey(GoogleNewsRequestsString.apiKey);
-        homePageParam.setQ(List.of("Путин","Putin"));
-        homePageParam.setFrom(LocalDate.now());
-        return homePageParam;
-    }
+
+
     @GetMapping("/news")
     public List<News> findNews(){
        return findNewsService.getAllNews();
