@@ -5,11 +5,9 @@ import com.example.search_for_mentions.ClientGoogle.GoogleNewsRequestsString;
 import com.example.search_for_mentions.ClientGoogle.model.Example;
 import com.example.search_for_mentions.ClientGoogle.model.Source;
 
-import com.example.search_for_mentions.model.News;
-import com.example.search_for_mentions.model.NewsSource;
+import com.example.search_for_mentions.exceptions.NotFoundException;
+import com.example.search_for_mentions.model.*;
 import com.example.search_for_mentions.controllers.paramsFiles.HomePageParam;
-import com.example.search_for_mentions.model.Question;
-import com.example.search_for_mentions.model.RequestWord;
 import com.example.search_for_mentions.services.FindNewsService;
 import com.example.search_for_mentions.storage.NewsDao;
 import com.example.search_for_mentions.storage.SourceDao;
@@ -20,10 +18,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
+import static com.example.search_for_mentions.model.PositiveStatus.*;
 
 @Service
 @Slf4j
@@ -50,6 +46,7 @@ public class FindNewsServiceImpl implements FindNewsService {
                 newsSource.getNewsList().add(news);
                 news.setNewsSource(newsSource.getName());
                 news.setWord(q);
+                setNewsStatus(news);
                 newsList.add(news.getTitle());
                 newsDao.save(news);
             }
@@ -58,6 +55,11 @@ public class FindNewsServiceImpl implements FindNewsService {
         });
         return newsList;
     }
+
+    private void setNewsStatus(News news) {
+        news.setPositiveStatus(UNDEFINDED);
+    }
+
 
     private Optional<NewsSource> checkOrSaveSourse(String sourceName) {
         return sourceDao.findByName(sourceName);
@@ -70,7 +72,7 @@ public class FindNewsServiceImpl implements FindNewsService {
         String sortBy = homePageParam.getSortBy();
         String apiKey = GoogleNewsRequestsString.apiKey; // TODO: 07.07.2022 needclient Selenium
         q.getWords().forEach(r -> getNewsList(r, from, sortBy, apiKey));
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
@@ -85,5 +87,25 @@ public class FindNewsServiceImpl implements FindNewsService {
         } else {
             throw new NoSuchElementException(news.getUrl());
         }
+    }
+
+    @Override
+    public News selectNewsStatus(Integer id, String status) {
+        News news = newsDao.findById(id)
+                .orElseThrow(()->new NotFoundException("not found", "News", String.valueOf(id)));
+        if (status.toLowerCase().equals(POSITIVE.toString().toLowerCase())){
+news.setPositiveStatus(POSITIVE);
+
+        } else if (status.toLowerCase().equals(NEGTIVE.toString().toLowerCase())){
+            news.setPositiveStatus(NEGTIVE);
+        }else if (status.toLowerCase().equals(NEUTRAL.toString().toLowerCase())){
+            news.setPositiveStatus(NEUTRAL);
+        }
+        return newsDao.save(news);
+    }
+
+    @Override
+    public List<News> findByStatus(PositiveStatus positiveStatus) {
+        return newsDao.findAllByPositiveStatus(positiveStatus);
     }
 }

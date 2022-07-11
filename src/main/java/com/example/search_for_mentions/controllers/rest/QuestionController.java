@@ -1,4 +1,4 @@
-package com.example.search_for_mentions.controllers;
+package com.example.search_for_mentions.controllers.rest;
 
 import com.example.search_for_mentions.model.Question;
 import com.example.search_for_mentions.services.QuestionService;

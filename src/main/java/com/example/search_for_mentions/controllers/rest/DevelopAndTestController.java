@@ -1,4 +1,4 @@
-package com.example.search_for_mentions.controllers;
+package com.example.search_for_mentions.controllers.rest;
 
 import com.example.search_for_mentions.ClientGoogle.GoogleNewsRequestsString;
 import com.example.search_for_mentions.controllers.paramsFiles.HomePageParam;
